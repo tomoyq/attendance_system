@@ -8,7 +8,8 @@
     <title>Works</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{% static 'css/accounts.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/accounts.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/works.css' %}"/>
 
     <script>
         tailwind.config = {
@@ -61,7 +62,7 @@
 </head>
 <body>
 
-    <div class="bg-gray-50 dark:bg-gray-900">
+    <div class="bg-gray-50 dark:bg-gray-900 w-screen h-screen">
         {% block content %}
         {% endblock content %}
     </div>

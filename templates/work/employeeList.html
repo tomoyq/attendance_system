@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="pt-24 w-full h-screen mx-auto bg-primary-100">
+  <div class="flex justify-center items-center py-10 text-4xl font-bold">
+    <h1>社員一覧</h1>
+  </div>
+
+  <table class="table-auto w-50% mx-auto mt-24">
+    <thead>
+      <tr>
+        <th class="border-black border-2 px-4 py-2">社員番号</th>
+        <th class="border-black border-2 px-4 py-2 w-3/4">名前</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border-black border-2 px-4 py-2 text-center">111111</td>
+        <td class="border-black border-2 px-4 py-2 "><a href="">山田太郎</a></td>
+      </tr>
+
+      <tr>
+        <td class="border-black border-2 px-4 py-2 text-center">222222</td>
+        <td class="border-black border-2 px-4 py-2 "><a href="">山田花子</a></td>
+      </tr>
+
+      <tr>
+        <td class="border-black border-2 px-4 py-2 text-center">333333</td>
+        <td class="border-black border-2 px-4 py-2 "><a href="">田中一</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="{% static 'javascript/works/employeeList.js' %}"></script>
+
+{% endblock content%}

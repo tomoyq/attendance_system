@@ -2,6 +2,9 @@
 const tabButtons = document.getElementsByClassName('tab-button')
 const tabContents = document.getElementsByClassName('content')
 
+//背景色を変えるためのdiv要素
+const loginContent = document.getElementById('loginContent')
+
 function onClick(){
     //全てのタブボタンとタブコンテンツからis-activeを外す
     for(let j = 0; j < tabButtons.length; j++){
@@ -15,6 +18,15 @@ function onClick(){
     //タブボタンに紐づくコンテンツにis-activeを追加
     const targetContent =document.getElementById('content' + this.id);
     targetContent.classList.add('is-active');
+
+    //背景にbg-primaryがあるか確認
+    result = loginContent.classList.contains('bg-primary-100');
+    //ない場合は追加
+    if(result){
+        loginContent.classList.remove('bg-primary-100');
+    } else {
+        loginContent.classList.add('bg-primary-100');
+    };
 };
 
 document.addEventListener("DOMContentLoaded", function(){
