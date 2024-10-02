@@ -1,0 +1,11 @@
+.tab > .is-active {
+    border-bottom: solid;
+}
+
+.content{
+    display: none;
+}
+
+.content.is-active{
+    display: block;
+}
