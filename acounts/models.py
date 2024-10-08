@@ -17,30 +17,30 @@ from work.models import Manager
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, employee_number, username, password, **extra_fields):
+    def _create_user(self, employee_number, name, password, **extra_fields):
         """
-        Create and save a user with the given username, email, and password.
+        Create and save a user with the given name, email, and password.
         """
-        if not username:
-            raise ValueError("The given username must be set")
+        if not name:
+            raise ValueError("The given name must be set")
         if not employee_number:
             raise ValueError("The given employee_number must be set")
         
         GlobalUserModel = apps.get_model(
             self.model._meta.app_label, self.model._meta.object_name
         )
-        username = GlobalUserModel.normalize_username(username)
-        user = self.model(username=username, employee_number=employee_number, **extra_fields)
+        name = GlobalUserModel.normalize_username(name)
+        user = self.model(name=name, employee_number=employee_number, **extra_fields)
         user.password = make_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, employee_number, username, password=None, **extra_fields):
+    def create_user(self, employee_number, name, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-        return self._create_user(employee_number, username, password, **extra_fields)
+        return self._create_user(employee_number, name, password, **extra_fields)
 
-    def create_superuser(self, employee_number, username, password=None, **extra_fields):
+    def create_superuser(self, employee_number, name, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -49,7 +49,7 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
 
-        return self._create_user(employee_number, username, password, **extra_fields)
+        return self._create_user(employee_number, name, password, **extra_fields)
 
     def with_perm(
         self, perm, is_active=True, include_superusers=True, backend=None, obj=None
@@ -90,7 +90,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
 
     employee_number = models.CharField(
-        unique=True,
+        primary_key=True,
         validators=[RegexValidator(r'^[0-9]{6}$')],
         max_length=6,
         error_messages={
@@ -99,17 +99,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         #管理者のログイン画面に社員番号と表示
         verbose_name="社員番号",
     )
-    username = models.CharField(
-        _("username"),
+    name = models.CharField(
+        _("名前"),
         max_length=150,
         help_text=_(
             "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         ),
         validators=[username_validator],
+        null=True,
     )
-    #manager_id = models.ForeignKey(
-    #    Manager, on_delete=models.CASCADE,blank=True
-    #)
+    manager_id = models.ForeignKey(
+        Manager,
+        on_delete=models.CASCADE,
+        null=True,
+    )
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
@@ -128,12 +131,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = ""
     USERNAME_FIELD = "employee_number"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ["name"]
+
+    def __str__(self):
+        return f'{str(self.employee_number)} {self.name}'
 
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
-        #abstract = True
 
     #def email_user(self, subject, message, from_email=None, **kwargs):
     #    """Send an email to this user."""
