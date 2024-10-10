@@ -19,8 +19,6 @@ class CustomUserMmodelTest(TestCase):
         #user2 = CustomUser.objects.create(employee_number='1111111', name="田中太郎", manager_id=self.manager, )
         with self.assertRaises(ValidationError):
             user1.full_clean()
-        # with self.assertRaises(ValidationError):
-        #     CustomUser.objects.create(employee_number='1番', name="田中太郎", manager_id=self.manager, )
 
     #社員番号はユニークであるか
 
