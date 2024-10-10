@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator
 
 from django.apps import apps
 from django.contrib import auth
@@ -91,7 +91,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     employee_number = models.CharField(
         primary_key=True,
-        validators=[RegexValidator(r'^[0-9]{6}$')],
+        validators=[RegexValidator(regex=r"[0-9]{6}"), MinLengthValidator(6)],
         max_length=6,
         error_messages={
             "unique": _("A user with that employee_number already exists."),
