@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from django.apps import apps
 from django.contrib import auth
@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 
 from work.models import Manager
 
-# Create your models here.
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -89,10 +88,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     username_validator = UnicodeUsernameValidator()
 
-    employee_number = models.CharField(
+    employee_number = models.IntegerField(
         primary_key=True,
-        validators=[RegexValidator(regex=r"[0-9]{6}"), MinLengthValidator(6)],
-        max_length=6,
+        validators=[MinValueValidator(6), MaxValueValidator(6)],
         error_messages={
             "unique": _("A user with that employee_number already exists."),
         },
@@ -106,12 +104,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         ),
         validators=[username_validator],
-        null=True,
+        #null=True,
     )
     manager_id = models.ForeignKey(
         Manager,
         on_delete=models.CASCADE,
-        null=True,
+        #null=True,
     )
     is_staff = models.BooleanField(
         _("staff status"),
