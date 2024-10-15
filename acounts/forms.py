@@ -16,12 +16,13 @@ class EmployeeNumberField(forms.IntegerField):
         "invalid": _("社員番号は半角数字のみの入力です"),
     }
     #数字のみを判定するregex
-    default_validators = [validators.RegexValidator(regex=r'^[0-9]{6}$')]
+    default_validators = [validators.RegexValidator(r'^[0-9]{6}$')]
 
     #validatorを追加
     def __init__(self):
-        self.validators = [self.default_validators, validators]
         super().__init__()
+        self.validators = self.default_validators
+
 
     def widget_attrs(self, widget):
         return {
