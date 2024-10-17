@@ -5,7 +5,7 @@ from django.test import TestCase
 from acounts.models import CustomUser
 from work.models import Manager
 
-class CustomUserMmodelTest(TestCase):
+class CustomUserModelTest(TestCase):
 
     def setUp(self):
         self.manager = Manager.objects.create(name="田中太郎")
