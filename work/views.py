@@ -1,8 +1,11 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.shortcuts import render
 
-class HomeView(TemplateView):
-    template_name = 'work/home.html'
+from .models import *
 
-def employeeList(request):
-    return render(request, 'work/employeeList.html')
+class HomeView(ListView):
+    template_name = 'work/home.html'
+    model = Attendance
+
+class EmployeeListView(TemplateView):
+    template_name = 'work/employeeList.html'

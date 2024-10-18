@@ -5,8 +5,7 @@ from . import views
 app_name = 'work'
 
 urlpatterns = [
-     #'/<int:userId>'
-    path('', views.HomeView.as_view(), name='home'),
+    path('<int:pk>', views.HomeView.as_view(), name='home'),
     #'/admin/<int:userId>'
-    path('admin/', views.employeeList, name='employeeList'),
+    path('admin/', views.EmployeeListView.as_view(), name='employeeList'),
 ]
