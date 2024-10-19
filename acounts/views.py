@@ -10,6 +10,6 @@ class LoginView(LoginView):
     #ログイン済みの場合リダイレクト先に遷移させる
     redirect_authenticated_user = True
 
-    def get_default_url(self):
+    def get_default_redirect_url(self):
         #リダイレクト先のurlにpkを渡す
         return resolve_url(settings.LOGIN_REDIRECT_URL, pk=int(self.request.user.pk))
