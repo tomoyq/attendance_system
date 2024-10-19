@@ -5,7 +5,8 @@ from django.conf import settings
 class Manager(models.Model):
     name = models.CharField(
         max_length=150,
-        verbose_name= "名前"
+        verbose_name= "名前",
+        unique=True
     )
 
     #テーブルのレコード名
@@ -22,24 +23,25 @@ class Attendance(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         verbose_name="社員番号",
-        null=True,
     )
     date = models.DateField(
         verbose_name="出勤日",
-        null=True,
     )
     attendance_time = models.TimeField(
         verbose_name="出勤時間"
     )
     closing_time = models.TimeField(
-        verbose_name="退勤時間"
+        verbose_name="退勤時間",
+        null=True,
     )
     break_time = models.TimeField(
-        verbose_name="休憩時間"
+        verbose_name="休憩時間",
+        null=True,
     )
     content = models.CharField(
         max_length=150,
-        verbose_name="業務内容"
+        verbose_name="業務内容",
+        null=True,
     )
 
     def __str__(self):
