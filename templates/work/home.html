@@ -40,7 +40,12 @@
 
         <div class="w-1/5 text-center">
           <h3>田中太郎さんの勤怠記録</h3>
-          <a href="" class="hover:underline hover:decoration-blue-500">ログアウト</a>
+
+          <form method="POST" action="{% url 'acounts:logout' %}" name="logout_form">
+            {% csrf_token %}
+            <a href="#" onclick="document.logout_form.submit();" class="hover:underline hover:decoration-blue-500">ログアウト</a>
+          </form>
+
         </div>
     </div>
 
