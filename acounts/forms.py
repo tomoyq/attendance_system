@@ -3,14 +3,13 @@ from django.core import validators
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.text import capfirst
-from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 from django.forms.widgets import TextInput
 
 
 User = get_user_model()
 
-class EmployeeNumberField(forms.IntegerField):
+class EmployeeNumberField(forms.CharField):
     widget = TextInput
     default_error_messages = {
         "invalid": _("社員番号は半角数字のみの入力です"),
@@ -125,3 +124,4 @@ class LoginForm(CustomAuthenticationForm):
             field.widget.attrs['placeholder'] = field.label
             #classを追加
             field.widget.attrs['class'] = field_classes
+
