@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import RegexValidator
 
 from django.apps import apps
 from django.contrib import auth
@@ -88,9 +88,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     username_validator = UnicodeUsernameValidator()
 
-    employee_number = models.IntegerField(
+    employee_number = models.CharField(
         primary_key=True,
-        validators=[MinValueValidator(6), MaxValueValidator(6)],
+        validators=[RegexValidator(r'^[0-9]{6}$')],
         error_messages={
             "unique": _("A user with that employee_number already exists."),
         },
@@ -104,12 +104,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
         ),
         validators=[username_validator],
-        #null=True,
     )
     manager_id = models.ForeignKey(
         Manager,
         on_delete=models.CASCADE,
-        #null=True,
     )
     is_staff = models.BooleanField(
         _("staff status"),
@@ -129,7 +127,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = ""
     USERNAME_FIELD = "employee_number"
-    REQUIRED_FIELDS = ["name"]
+    REQUIRED_FIELDS = ["name","manager_id"]
 
     def __str__(self):
         return f'{str(self.employee_number)} {self.name}'

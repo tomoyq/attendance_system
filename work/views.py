@@ -9,5 +9,10 @@ class HomeView(ListView):
     template_name = 'work/home.html'
     model = Attendance
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
 class EmployeeListView(TemplateView):
     template_name = 'work/employeeList.html'
