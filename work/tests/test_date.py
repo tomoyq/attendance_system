@@ -23,3 +23,12 @@ class CalculateDatesTest(TestCase):
         januaryDays = self.date.calculate_days(date=datetime.date(2024, 1, 1))
         #2つ目のindexに１が入っているはず
         self.assertEqual(januaryDays[0][1], 1)
+
+    def test_calculate_five_months(self):
+        month_list = self.date.calculate_five_month()
+
+        #５つの要素を持っているはず
+        self.assertEqual(len(month_list), 5)
+
+        #１つ目の要素は今月を表すはず
+        self.assertEqual(month_list[0], (self.date.today.year, self.date.today.month))
