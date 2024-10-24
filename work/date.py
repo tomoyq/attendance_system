@@ -1,6 +1,8 @@
 import calendar
 import datetime
 
+from dateutil.relativedelta import *
+
 class CalculateDates(calendar.Calendar):
 
     firstweekday = 6
@@ -24,4 +26,11 @@ class CalculateDates(calendar.Calendar):
         dates_list = [i for i in dates if i[1] == target.month]
         
         return dates_list
+    
+    #当月から数えて五ヵ月分の月を取得
+    def calculate_five_month(self):
+        #リストに(年,月)のタプルを格納       
+        lastFiveMonths = [((self.today - relativedelta(months=i)).year, (self.today - relativedelta(months=i)).month) 
+                        for i in range(5)]
+        return lastFiveMonths
         
