@@ -1,3 +1,6 @@
+import datetime
+import calendar
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -33,3 +36,17 @@ class HomeViewTests(TestCase):
         #requestの中のcontextにuserが入っているはず
         self.assertEqual(request.context['user'].name, self.user.name)
 
+    #ドロップダウンで何も選択していないときのdate_listは今月の日付をもっているはず
+    def test_context_data_not_pulldown(self):
+        today = datetime.date.today()
+        self.client.force_login(self.user)
+        request = self.client.get(reverse('work:home', kwargs={'pk':self.user.employee_number}))
+        #今月の日数とdate_listの要素数が同じになるはず
+        self.assertEqual(len(request.context['date_list']), calendar.monthrange(today.year, today.month)[1])
+
+    #ドロップダウンで選択したときのdate_listは選択した月の日付をもっているはず
+    def test_context_data_click_pulldown(self):
+        self.client.force_login(self.user)
+        request = self.client.get(reverse('work:home', kwargs={'pk':self.user.employee_number}), data={'drop_down': '2024, 1'})
+        #drop_downで選択した月の日数とdate_listの要素数が同じになるはず
+        self.assertEqual(len(request.context['date_list']), calendar.monthrange(2024, 1)[1])

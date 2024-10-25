@@ -12,10 +12,9 @@ class CalculateDates(calendar.Calendar):
         self.today = datetime.date.today()
 
     #月の日数と曜日を取得
-    def calculate_days(self, date=None):
-        target = self.today
-        if date:
-            target = date
+    def calculate_days(self, date):
+        #文字列型に変換したdateを(年, 月)のフォーマットでdate型に変換している
+        target = datetime.datetime.strptime(str(date), '%Y, %m')
 
         #調べたい月を引数に渡す
         #(日, 曜日)のリストを保持(nextで一つずつ取り出す)
