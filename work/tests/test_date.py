@@ -14,14 +14,16 @@ class CalculateDatesTest(TestCase):
         self.assertEqual(self.date.today, datetime.date.today())
 
     def test_caluculate_days(self):
+        #formatが(年, 月)のためそれに合うように代入
+        target_month = str(self.date.today.year) + ', ' + str(self.date.today.month)
 
-        #関数に引数を渡してないため今月のすべての日にちを持っているはず
-        thisMonthDays = self.date.calculate_days()
+        #今日の日付を渡したため今月のすべての日にちを持っているはず
+        thisMonthDays = self.date.calculate_days(date = target_month)
         #タプルを要素にしたリストオブジェクトのため2つ目のindexで日付を調べる
         self.assertEqual(thisMonthDays[0][0], 1)
 
         #関数に１月１日のobjを渡すと１月のすべての日にちを持っているはず
-        januaryDays = self.date.calculate_days(date=datetime.date(2024, 1, 1))
+        januaryDays = self.date.calculate_days(date='2024, 1')
         #monthrangeで月の日数を調べる(戻り値は(曜日の数字, 日数)のタプル)
         #januaryDaysの要素数が同じになるはず
         self.assertEqual(len(januaryDays), calendar.monthrange(2024, 1)[1])

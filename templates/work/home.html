@@ -5,7 +5,7 @@
 {% block content %}
 
 <!-- header -->
-<div id="homeContent" class="container px-5 pt-24 w-full mx-auto">
+<div id="homeContent" class="container px-5 py-24 w-full mx-auto">
     <div class="flex flex-col justify-center items-center sm:flex-row sm:items-center items-start">
 
         <div class="dropdownContainer mx-auto">
@@ -17,22 +17,16 @@
             </button>
             
             <!-- Dropdown menu -->
-            <div id="dropdown" class="z-10 hidden bg-white  divide-gray-100 rounded-lg shadow dark:bg-gray-700">
-                <ul class="py-2 text-sm" aria-labelledby="dropdownDefaultButton">
-                <li>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">2024/2</a>
-                </li>
-                <li>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">2024/3</a>
-                </li>
-                <li>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">2024/4</a>
-                </li>
-                <li>
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">2024/5</a>
-                </li>
-                </ul>
-            </div>
+            <form action="{% url 'work:home' user.employee_number %}" method="get">
+              {% csrf_token %}
+              <div id="dropdown" class="z-10 hidden bg-white divide-gray-100 rounded-lg shadow dark:bg-gray-700">
+                <div class="py-2 text-sm text-center" aria-labelledby="dropdownDefaultButton">
+                  {% for month in dropdown_months %}
+                    <button type="submit" name="drop_down" class="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" value="{{month.0}}, {{month.1}}">{{month.0}} / {{month.1}}<!-- month.0でタプルの1つ目の要素にアクセスしている --></button>
+                  {% endfor %}              
+                </div>
+              </div>
+            </form>
             
         </div>
 
@@ -50,7 +44,7 @@
     </div>
 
     <!-- table -->
-    <table class="table-auto w-50% mx-auto mt-24">
+    <table class="table-auto w-3/4 mx-auto mt-24">
         <thead>
           <tr>
             <th class="border px-4 py-2">日付</th>
@@ -61,15 +55,17 @@
           </tr>
         </thead>
         <tbody>
+          {% for date in date_list %}
           <tr>
-            <td class="border px-4 py-2">1日</td>
+            <td class="border px-4 py-2 text-center">{{date}}</td>
             <td class="border px-4 py-2 text-center">9:00</td>
             <td class="border px-4 py-2 text-center">18:00</td>
             <td class="border px-4 py-2 text-center">1:00</td>
             <td class="border px-4 py-2 ">打ち込み打ち込み</td>
-            <td class="border px-4 py-2 "><a href="#" name="modalButton" id="1"><span class="dli-plus-circle"><span></span></span></a></td>
+            <td class="border px-4 py-2 text-center"><a href="#" name="modalButton" id="1"><span class="dli-plus-circle"><span></span></span></a></td>
           </tr>
-          <tr>
+          {% endfor %}
+          <!-- <tr>
             <td class="border px-4 py-2">2日</td>
             <td class="border px-4 py-2 text-center">9:00</td>
             <td class="border px-4 py-2 text-center">18:00</td>
@@ -84,7 +80,7 @@
             <td class="border px-4 py-2 text-center">1:00</td>
             <td class="border px-4 py-2 ">打ち込み打ち込み打ち込</td>
             <td class="border px-4 py-2 "><a href="#" name="modalButton" id="3"><span class="dli-plus-circle"><span></span></span></a></td>
-          </tr>
+          </tr> -->
         </tbody>
     </table>
 
