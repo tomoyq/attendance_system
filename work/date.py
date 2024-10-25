@@ -18,12 +18,12 @@ class CalculateDates(calendar.Calendar):
             target = date
 
         #調べたい月を引数に渡す
-        #(年, 月, 日, 曜日)のリストを保持(nextで一つずつ取り出す)
-        dates = self.itermonthdays4(target.year, target.month)
+        #(日, 曜日)のリストを保持(nextで一つずつ取り出す)
+        dates = self.itermonthdays2(target.year, target.month)
 
-        #calendarには前月の最終日や次月の初日等不要な日付があるため
+        #calendarには前月の最終日や次月の初日等不要な日付がある(日付が0になっている)
         #必要な日付だけのイテレータを作る
-        dates_list = [i for i in dates if i[1] == target.month]
+        dates_list = [i for i in dates if i[0] != 0]
         
         return dates_list
     
