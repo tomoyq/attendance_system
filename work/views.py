@@ -48,7 +48,7 @@ class HomeView(ListView):
         #当月合わせて5か月分の過去の月を取得
         context['dropdown_months'] = self.date.calculate_five_month()
         #表示したい月の日数を取得
-        context['date_list'] = self.date.calculate_days(date=self.target_month)
+        context['date_list'] = self.date.localize_date_list(target_month=self.target_month)
 
         return context
 
