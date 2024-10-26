@@ -15,10 +15,13 @@ class CalculateDates(calendar.Calendar):
     def __init__(self):
         self.today = datetime.date.today()
 
+    def change_str_datetime(self, date):
+        #文字列型に変換したdateを(年, 月)のフォーマットでdate型に変換している
+        return datetime.datetime.strptime(str(date), '%Y%m')
+
     #月の日数と曜日を取得
     def calculate_days(self, date):
-        #文字列型に変換したdateを(年, 月)のフォーマットでdate型に変換している
-        target = datetime.datetime.strptime(str(date), '%Y, %m')
+        target = self.change_str_datetime(date=date)
 
         #調べたい月を引数に渡す
         #(日, 曜日)のリストを保持(nextで一つずつ取り出す)
