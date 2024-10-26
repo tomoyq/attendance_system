@@ -4,22 +4,26 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView, ListView
 
-from .models import *
+from .models import Attendance
 from .date import CalculateDates
 
 @method_decorator(login_required, name='dispatch')
 class HomeView(ListView):
     template_name = 'work/home.html'
     model = Attendance
+    ordering = '-employee_number', '-date'
     date = CalculateDates()
     #初期値は今日の日付から年と月をとって文字列型で保持
     #calculate_days関数のformatが(年, 月)のためそれに合うように代入
-    target_month = str(date.today.year) + ', ' + str(date.today.month)
+    target_month = str(date.today.year) + str(date.today.month)
+    #指定した月のquerysetが取れないときtemplateに渡すフラグ
+    is_queryset = False
 
     def get(self, request, *args, **kwargs):
+        self.is_queryset = False
 
         if 'drop_down' in self.request.GET:
-            self.target_month = self.request.GET['drop_down']
+            self.target_month = self.request.GET.get('drop_down')
 
         self.object_list = self.get_queryset()
         allow_empty = self.get_allow_empty()
@@ -41,16 +45,42 @@ class HomeView(ListView):
         context = self.get_context_data()
         return self.render_to_response(context)
 
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs)
+        #表示したい月のdatetime型objの取得
+        target = self.date.change_str_datetime(date=self.target_month)
+
+        #社員番号がログインしているユーザーのもので、出勤日がtargetの年月と一致しているものを取得
+        queryset = queryset.filter(employee_number=self.request.user.pk, date__year=target.year, date__month=target.month)
+        if queryset.first() is None:
+            self.is_queryset = True
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
+        #表示している年月を取得
+        context['target'] = self.date.change_str_datetime(date=self.target_month)
         #当月合わせて5か月分の過去の月を取得
         context['dropdown_months'] = self.date.calculate_five_month()
         #表示したい月の日数を取得
         context['date_list'] = self.date.localize_date_list(target_month=self.target_month)
+        #object_listに入っているデータの日付だけのリスト
+        context['queryset_days'] = self.get_day_from_queyset()
+        context['is_queryset'] = self.is_queryset
 
         return context
+    
+    #querysetから日付のリストを作る
+    def get_day_from_queyset(self):
+        #querysetからdateフィールドだけのリストを作成
+        queryset_dates = self.object_list.values_list('date', flat=True)
+        queryset_dates_list = list(queryset_dates)
+
+        #datetime型のobjから日付だけのリストを作る
+        days_list = [date.day for date in queryset_dates_list ]
+        return days_list
 
 class EmployeeListView(TemplateView):
     template_name = 'work/employeeList.html'

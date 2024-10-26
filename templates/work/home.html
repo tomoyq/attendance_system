@@ -2,27 +2,29 @@
 
 {% load static %}
 
+{% load boost %}
+
 {% block content %}
 
 <!-- header -->
-<div id="homeContent" class="container px-5 py-24 w-full mx-auto">
-    <div class="flex flex-col justify-center items-center sm:flex-row sm:items-center items-start">
+<div id="homeContent" class="container px-5 py-24 w-full h-100vh mx-auto">
+    <div class="flex flex-col justify-center items-center sm:items-center items-start relative">
 
-        <div class="dropdownContainer mx-auto">
+        <div class="dropdownContainer mx-auto flex-1 absolute left-0">
             <!-- dropdown -->
             
-            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">2024/1 <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6">
+            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">{{target.year}} / {{target.month}} <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                 </svg>
             </button>
             
             <!-- Dropdown menu -->
-            <form action="{% url 'work:home' user.employee_number %}" method="get">
+            <form action="{% url 'work:home' user.employee_number %}" method="GET">
               {% csrf_token %}
               <div id="dropdown" class="z-10 hidden bg-white divide-gray-100 rounded-lg shadow dark:bg-gray-700">
                 <div class="py-2 text-sm text-center" aria-labelledby="dropdownDefaultButton">
                   {% for month in dropdown_months %}
-                    <button type="submit" name="drop_down" class="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" value="{{month.0}}, {{month.1}}">{{month.0}} / {{month.1}}<!-- month.0でタプルの1つ目の要素にアクセスしている --></button>
+                    <button type="submit" name="drop_down" class="px-4 py-2 w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" value="{{month.0}}{{month.1}}">{{month.0}} / {{month.1}}<!-- month.0でタプルの1つ目の要素にアクセスしている --></button>
                   {% endfor %}              
                 </div>
               </div>
@@ -30,9 +32,11 @@
             
         </div>
 
-        <h1 class="flex-grow sm:pr-16 font-medium title-font flex justify-center items-center">月別リスト</h1>
+        <div class="flex-1 justify-center items-center">
+          <h1 class="font-medium title-font">月別リスト</h1>
+        </div>
 
-        <div class="w-1/5 text-center">
+        <div class="w-1/5 text-center flex-1 absolute right-0">
           <h3>{{user.name}}さんの勤怠記録</h3>
 
           <form method="POST" action="{% url 'acounts:logout' %}" name="logout_form">
@@ -43,46 +47,52 @@
         </div>
     </div>
 
-    <!-- table -->
-    <table class="table-auto w-3/4 mx-auto mt-24">
-        <thead>
-          <tr>
-            <th class="border px-4 py-2">日付</th>
-            <th class="border px-4 py-2">出勤時間</th>
-            <th class="border px-4 py-2">退勤時間</th>
-            <th class="border px-4 py-2">休憩時間</th>
-            <th class="border px-4 py-2">業務内容</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for date in date_list %}
-          <tr>
-            <td class="border px-4 py-2 text-center">{{date}}</td>
-            <td class="border px-4 py-2 text-center">9:00</td>
-            <td class="border px-4 py-2 text-center">18:00</td>
-            <td class="border px-4 py-2 text-center">1:00</td>
-            <td class="border px-4 py-2 ">打ち込み打ち込み</td>
-            <td class="border px-4 py-2 text-center"><a href="#" name="modalButton" id="1"><span class="dli-plus-circle"><span></span></span></a></td>
-          </tr>
-          {% endfor %}
-          <!-- <tr>
-            <td class="border px-4 py-2">2日</td>
-            <td class="border px-4 py-2 text-center">9:00</td>
-            <td class="border px-4 py-2 text-center">18:00</td>
-            <td class="border px-4 py-2 text-center">1:00</td>
-            <td class="border px-4 py-2 ">打ち込み打ち込み打ち込み打ち込み</td>
-            <td class="border px-4 py-2 "><a href="#" name="modalButton" id="2"><span class="dli-plus-circle"><span></span></span></a></td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-2">3日</td>
-            <td class="border px-4 py-2 text-center">9:00</td>
-            <td class="border px-4 py-2 text-center">18:00</td>
-            <td class="border px-4 py-2 text-center">1:00</td>
-            <td class="border px-4 py-2 ">打ち込み打ち込み打ち込</td>
-            <td class="border px-4 py-2 "><a href="#" name="modalButton" id="3"><span class="dli-plus-circle"><span></span></span></a></td>
-          </tr> -->
-        </tbody>
-    </table>
+    {% if is_queryset %}
+      <div class="text-center mt-24">
+        <h1>{{target.year}}年{{target.month}}月</h1>の勤怠記録はまだありません。
+      </div>
+    {% else %}
+      <!-- table -->
+      <table class="table-auto w-3/4 mx-auto mt-24">
+          <thead>
+            <tr>
+              <th class="border px-4 py-2">日付</th>
+              <th class="border px-4 py-2">出勤時間</th>
+              <th class="border px-4 py-2">退勤時間</th>
+              <th class="border px-4 py-2">休憩時間</th>
+              <th class="border px-4 py-2">業務内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- date_listから日付と曜日を一つずつ取り出す -->
+            {% for date, weekday in date_list %}
+                <!-- for文を２つのリストで回すためにdjango-boostのzip関数を使用 -->
+              {% for object, queryset_day in object_list|zip:queryset_days %}
+                <!-- 日付とクエリセットから作ったリストの値が同じときのobject_listの中身をそれぞれ描写(indexが0からのためcounterも0からスタート) -->
+                {% if queryset_day == date %}
+                  <tr>
+                    <td class="border px-4 py-2 text-center">{{ date }} / {{ weekday }}</td>
+                    <td class="border px-4 py-2 text-center">{{ object.attendance_time }}</td>
+                    <td class="border px-4 py-2 text-center">{{ object.closing_time }}</td>
+                    <td class="border px-4 py-2 text-center">{{ object.break_time }}</td>
+                    <td class="border px-4 py-2 ">{{ object.content }}</td>
+                    <td class="border px-4 py-2 text-center"><a href="#" name="modalButton" id="1"><span class="dli-plus-circle"><span></span></span></a></td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td class="border px-4 py-2 text-center">{{ date }} / {{ weekday }}</td>
+                    <td class="border px-4 py-2 text-center"></td>
+                    <td class="border px-4 py-2 text-center"></td>
+                    <td class="border px-4 py-2 text-center"></td>
+                    <td class="border px-4 py-2 "></td>
+                    <td class="border px-4 py-2 text-center"></td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+      </table>
+    {% endif %}
 
 </div>
 

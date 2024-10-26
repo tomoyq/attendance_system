@@ -16,7 +16,7 @@ class CalculateDatesTest(TestCase):
 
     def test_caluculate_days(self):
         #formatが(年, 月)のためそれに合うように代入
-        target_month = str(self.date.today.year) + ', ' + str(self.date.today.month)
+        target_month = str(self.date.today.year) + str(self.date.today.month)
 
         #今日の日付を渡したため今月のすべての日にちを持っているはず
         thisMonthDays = self.date.calculate_days(date = target_month)
@@ -24,7 +24,7 @@ class CalculateDatesTest(TestCase):
         self.assertEqual(thisMonthDays[1][0], 1)
 
         #関数に１月１日のobjを渡すと１月のすべての日にちを持っているはず
-        januaryDays = self.date.calculate_days(date='2024, 1')
+        januaryDays = self.date.calculate_days(date='20241')
         #monthrangeで月の日数を調べる(戻り値は(曜日の数字, 日数)のタプル)
         #januaryDaysの要素数が同じになるはず
         self.assertEqual(len(januaryDays[1]), calendar.monthrange(2024, 1)[1])
@@ -35,13 +35,13 @@ class CalculateDatesTest(TestCase):
         january_day = datetime.datetime(2024, 1, 1)
 
         #formatが(年, 月)のためそれに合うように代入
-        target_month = str(self.date.today.year) + ', ' + str(self.date.today.month)
+        target_month = str(self.date.today.year) + str(self.date.today.month)
 
         #今日の日付を渡したため今月のすべての日にちを持っているはず
         thisMonthDays = self.date.localize_date_list(target_month = target_month)
 
         #関数に１月１日のobjを渡すと１月のすべての日にちを持っているはず
-        januaryDays = self.date.localize_date_list(target_month='2024, 1')
+        januaryDays = self.date.localize_date_list(target_month='20241')
 
         self.assertEqual(len(thisMonthDays), calendar.monthrange(self.date.today.year, self.date.today.month)[1])
         self.assertEqual(len(januaryDays), calendar.monthrange(2024, 1)[1])
