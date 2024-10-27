@@ -1,3 +1,6 @@
+//modal表示ボタンを全て取得
+const modalButtons = document.getElementsByName('modalButton');
+
 //メニューを表示させる関数
 function onClick(){
     const target = document.getElementById('dropdown');
@@ -13,14 +16,6 @@ function onClick(){
 
 };
 
-//modalを表示する関数
-function openModal(e){
-    //modalのclassからhiddenを外す
-    this.target.classList.remove('hidden');
-
-    //スクロールできないようbodyにoverflow-hiddenをつける
-    document.body.classList.add('overflow-hidden');
-};
 
 //modalを閉じる関数
 function closeModal(e){
@@ -42,9 +37,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
     //modal表示ボタンを全て取得
     const modalButtons = document.getElementsByName('modalButton');
+
     //modal表示ボタンに関数を付与
     for(let i=0; i<modalButtons.length; i++){
-        modalButtons[i].addEventListener("click", {target: modal, handleEvent: openModal}, false);
+        modalButtons[i].addEventListener("click", {target: modal, handleEvent: openModal, arg: i}, false);
     };
 
     //modal閉じるボタンを取得
@@ -53,3 +49,43 @@ document.addEventListener("DOMContentLoaded", function(){
 
 },
 false);
+
+//modalを表示する関数
+function openModal(e){
+    //modalの要素を取得
+    const modalDate = document.getElementById('modal-date');
+    const modalAttendance = document.getElementById('modal-attendance');
+    const modalClosing = document.getElementById('modal-closing');
+    const modalBreak = document.getElementById('modal-break');
+    const modalContent = document.getElementById('modal-content');
+
+    //modalの中の値を動的に描画
+    modalDate.textContent = modalButtons[this.arg].dataset.date
+    if (modalButtons[this.arg].dataset.attendance) {
+        //出勤時間、退勤時間、休憩時間はそれぞれtimefieldのためvalueに値を入れた
+        modalAttendance.value = modalButtons[this.arg].dataset.attendance
+    }else{
+        ;
+    }
+    if (modalButtons[this.arg].dataset.closing) {
+        modalClosing.value = modalButtons[this.arg].dataset.closing
+    }else{
+        ;
+    }
+    if (modalButtons[this.arg].dataset.break) {
+        modalBreak.value = modalButtons[this.arg].dataset.break
+    }else{
+        ;
+    }if (modalButtons[this.arg].dataset.break) {
+        modalContent.value = modalButtons[this.arg].dataset.content
+    }else{
+        ;
+    }
+
+
+    //modalのclassからhiddenを外す
+    this.target.classList.remove('hidden');
+
+    //スクロールできないようbodyにoverflow-hiddenをつける
+    document.body.classList.add('overflow-hidden');
+};
