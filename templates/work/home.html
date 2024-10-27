@@ -71,7 +71,7 @@
                 <!-- 日付とクエリセットから作ったリストの値が同じときのobject_listの中身をそれぞれ描写(indexが0からのためcounterも0からスタート) -->
                 {% if queryset_day == date %}
                   <tr>
-                    <td class="border px-4 py-2 text-center">{{ date }} / {{ weekday }}</td>
+                    <td class="border px-4 py-2 text-center">{{ date }}日（{{ weekday }}）</td>
                     <td class="border px-4 py-2 text-center">{{ object.attendance_time }}</td>
                     <td class="border px-4 py-2 text-center">{{ object.closing_time }}</td>
                     <td class="border px-4 py-2 text-center">{{ object.break_time }}</td>
@@ -80,7 +80,7 @@
                   </tr>
                 {% else %}
                   <tr>
-                    <td class="border px-4 py-2 text-center">{{ date }} / {{ weekday }}</td>
+                    <td class="border px-4 py-2 text-center">{{ date }}日（{{ weekday }}）</td>
                     <td class="border px-4 py-2 text-center"></td>
                     <td class="border px-4 py-2 text-center"></td>
                     <td class="border px-4 py-2 text-center"></td>
