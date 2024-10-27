@@ -3,9 +3,11 @@ from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView, ListView
+#from django.views.generic.edit import BaseUpdateView
 
-from .models import Attendance
 from .date import CalculateDates
+from .forms import EditForm
+from .models import Attendance
 
 @method_decorator(login_required, name='dispatch')
 class HomeView(ListView):
@@ -69,6 +71,8 @@ class HomeView(ListView):
         #object_listに入っているデータの日付だけのリスト
         context['queryset_days'] = self.get_day_from_queyset()
         context['is_queryset'] = self.is_queryset
+        #編集モーダル内のform
+        context['edit_form'] = EditForm()
 
         return context
     
