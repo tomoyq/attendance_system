@@ -7,6 +7,22 @@ class EditForm(forms.ModelForm):
         model = Attendance
         fields = ['attendance_time', 'closing_time', 'break_time', 'content', ]
 
+        error_messages={
+            'attendance_time': {
+                'invalid': 'HH:MM形式で入力して下さい。'
+            },
+            'closing_time': {
+                'invalid': 'HH:MM形式で入力して下さい。'
+            },
+            'break_time': {
+                'invalid': 'HH:MM形式で入力して下さい。'
+            },
+        }
+
+        attendance_time = forms.TimeInput(format='HH:MM')
+        closing_time = forms.TimeInput(format='HH:MM')
+        break_time = forms.TimeInput(format='HH:MM')
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
