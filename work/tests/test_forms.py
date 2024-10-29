@@ -37,7 +37,7 @@ class TestInvalidEditForm(TestCase):
 
     def test_no_match_format_break_time(self):
         form_data = {
-            "attendance_time" : '14:00', 'closing_time' : '00:00', 'break_time' : 'a',
+            "attendance_time" : '14:00', 'closing_time' : '00:00', 'break_time' : 'a', 'content' : ''
         }
         form = EditForm(data=form_data)
 
