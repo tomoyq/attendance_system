@@ -37,13 +37,12 @@ class TestInvalidEditForm(TestCase):
 
     def test_no_match_format_break_time(self):
         form_data = {
-            "attendance_time" : '14:00', 'closing_time' : '00:00', 'break_time' : '0000'
+            "attendance_time" : '14:00', 'closing_time' : '00:00', 'break_time' : 'a', 'content' : ''
         }
         form = EditForm(data=form_data)
 
         self.assertFalse(form.is_valid(), "出勤時間でエラーが出ませんでした。")
         self.assertIn('break_time', form.errors.keys())
-        self.assertIn('HH:MM形式で入力して下さい。', form.errors['break_time'])
 
 
 class TestValidEditForm(TestCase):

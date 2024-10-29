@@ -34,7 +34,7 @@ class Attendance(models.Model):
         verbose_name="退勤時間",
         null=True,
     )
-    break_time = models.TimeField(
+    break_time = models.DurationField(
         verbose_name="休憩時間",
         null=True,
     )
