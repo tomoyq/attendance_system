@@ -58,9 +58,10 @@ function openModal(e){
     const modalClosing = document.getElementById('modal-closing');
     const modalBreak = document.getElementById('modal-break');
     const modalContent = document.getElementById('modal-content');
+    const targetObj = document.getElementsByName('target-obj')[0];
 
     //modalの中の値を動的に描画
-    modalDate.textContent = modalButtons[this.arg].dataset.date
+    modalDate.textContent = modalButtons[this.arg].dataset.date + modalButtons[this.arg].dataset.weekday
     if (modalButtons[this.arg].dataset.attendance) {
         //出勤時間、退勤時間、休憩時間はそれぞれtimefieldのためvalueに値を入れた
         modalAttendance.value = modalButtons[this.arg].dataset.attendance
@@ -81,6 +82,8 @@ function openModal(e){
     }else{
         ;
     }
+
+    targetObj.value +=  modalButtons[this.arg].dataset.date
 
 
     //modalのclassからhiddenを外す
