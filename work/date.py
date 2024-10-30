@@ -53,4 +53,10 @@ class CalculateDates(calendar.Calendar):
         lastFiveMonths = [((self.today - relativedelta(months=i)).year, (self.today - relativedelta(months=i)).month) 
                         for i in range(5)]
         return lastFiveMonths
-        
+    
+    #postメソッドで送られた値からdatetime型のobjを作成
+    def change_datetime_from_post(self, target:datetime.date, date):
+        #dateの中の'日'を削除して数字だけにする
+        date = date.replace('日', '')
+
+        return datetime.date(target.year, target.month, int(date))

@@ -90,6 +90,14 @@ class LoggedInHomeViewTests(TestCase):
         #querysetには今日の日付のデータが入っているためqueryset_daysにも今日の日付が入っている
         self.assertEqual(request.context['queryset_days'][0], datetime.date.today().day)
 
+    #postメソッドを実行するとターゲットとなる日付がかえってくる
+    def test_post(self):
+        Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date.today(), attendance_time=datetime.datetime.now())
+        request = self.client.post(reverse('work:home', kwargs={'pk':self.user_tanaka.employee_number}),
+                                   data={'target-obj':'30日'},)
+
+
+
 #ログインしていない場合のテスト
 class NotLoginHomeViewTests(TestCase):
 

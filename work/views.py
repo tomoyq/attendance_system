@@ -2,8 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.urls import reverse
 from django.views.generic import TemplateView, ListView
-#from django.views.generic.edit import BaseUpdateView
+from django.http import HttpResponseRedirect
 
 from .date import CalculateDates
 from .forms import EditForm
@@ -46,6 +47,16 @@ class HomeView(ListView):
                 )
         context = self.get_context_data()
         return self.render_to_response(context)
+    
+    def post(self, request, *args, **kwargs):
+        #ターゲットとなる年月をdate型で保持
+        target_month = self.date.change_str_datetime(date=self.target_month)
+        #年月とformからどの日のものかを取得して(年,月,日)のdate型を作成
+        target_obj_date = self.date.change_datetime_from_post(target=target_month, date=self.request.POST['target-obj'])
+        #target_obj_dateとpkをもとに対象のモデルを特定
+        instance = Attendance.objects.get(employee_number=self.request.user.pk, date=target_obj_date)
+        print(instance)
+        return HttpResponseRedirect(reverse('work:home', kwargs={'pk':self.request.user.pk}))
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)

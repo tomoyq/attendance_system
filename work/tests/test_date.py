@@ -58,3 +58,12 @@ class CalculateDatesTest(TestCase):
 
         #１つ目の要素は今月を表すはず
         self.assertEqual(month_list[0], (self.date.today.year, self.date.today.month))
+
+    def test_change_datetime_from_post(self):
+        target_month = self.date.today
+
+        target_obj = self.date.change_datetime_from_post(target=target_month, date='29日')
+
+        #型はdateになっているはず
+        self.assertTrue(isinstance(target_obj, datetime.date))
+        self.assertEqual(target_obj, datetime.date(self.date.today.year, self.date.today.month, 29))
