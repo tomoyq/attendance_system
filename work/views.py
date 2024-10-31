@@ -55,8 +55,13 @@ class HomeView(ListView):
         target_obj_date = self.date.change_datetime_from_post(target=target_month, date=self.request.POST['target-obj'])
         #target_obj_dateとpkをもとに対象のモデルを特定
         instance = Attendance.objects.get(employee_number=self.request.user.pk, date=target_obj_date)
-        print(instance)
-        return HttpResponseRedirect(reverse('work:home', kwargs={'pk':self.request.user.pk}))
+
+        #対象のモデルをinstanceに指定したformインスタンスを作成
+        form = EditForm(request.POST, instance=instance)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)
@@ -69,6 +74,17 @@ class HomeView(ListView):
             self.is_queryset = True
 
         return queryset
+    
+    def get_success_url(self):
+        return str(reverse('work:home', kwargs={'pk':self.request.user.pk}))
+    
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(edit_form=form))
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
