@@ -5,7 +5,9 @@ from django.test import TestCase
 from django.urls import reverse
 
 from acounts.models import CustomUser
+from work.forms import EditForm
 from work.models import Manager, Attendance
+from work.views import HomeView
 
 #loginしているときのテスト
 class LoggedInHomeViewTests(TestCase):
@@ -90,11 +92,25 @@ class LoggedInHomeViewTests(TestCase):
         #querysetには今日の日付のデータが入っているためqueryset_daysにも今日の日付が入っている
         self.assertEqual(request.context['queryset_days'][0], datetime.date.today().day)
 
-    #postメソッドを実行するとターゲットとなる日付がかえってくる
-    def test_post(self):
-        Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date.today(), attendance_time=datetime.datetime.now())
+    #form_validメソッドを実行するとターゲットとなるモデルの値が更新される
+    def test_form_valid(self):
+
+        Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31), attendance_time=datetime.datetime.now())
+
+        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31),)
+        #まだ変更していないためcontentは空である
+        self.assertEqual(instance.content, None)
+
         request = self.client.post(reverse('work:home', kwargs={'pk':self.user_tanaka.employee_number}),
-                                   data={'target-obj':'30日'},)
+                                   data={'target-obj':'31日',
+                                         "attendance_time" : '14:00',
+                                         'closing_time' : '00:00',
+                                         'break_time' : '01:00',
+                                         'content' : '積み込み'},)
+        
+        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31),)
+        #form_validで保存されているためcontentに積み込みが入っているはず
+        self.assertEqual(instance.content, '積み込み')
 
 
 
