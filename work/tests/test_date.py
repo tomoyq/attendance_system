@@ -60,7 +60,7 @@ class CalculateDatesTest(TestCase):
         self.assertEqual(month_list[0], (self.date.today.year, self.date.today.month))
 
     def test_change_datetime_from_post(self):
-        target_month = self.date.today
+        target_month = f'{self.date.today.year} / {self.date.today.month}'
 
         target_obj = self.date.change_datetime_from_post(target=target_month, date='29日')
 

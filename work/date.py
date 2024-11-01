@@ -55,8 +55,11 @@ class CalculateDates(calendar.Calendar):
         return lastFiveMonths
     
     #postメソッドで送られた値からdatetime型のobjを作成
-    def change_datetime_from_post(self, target:datetime.date, date):
+    def change_datetime_from_post(self, target, date):
+        #targetの中の空白文字でスライスして年と月をそれぞれ取得できるようにする
+        sep = ' / '
+        target = target.split(sep)
         #dateの中の'日'を削除して数字だけにする
         date = date.replace('日', '')
 
-        return datetime.date(target.year, target.month, int(date))
+        return datetime.date(int(target[0]), int(target[1]), int(date))
