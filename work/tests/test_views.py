@@ -95,20 +95,21 @@ class LoggedInHomeViewTests(TestCase):
     #form_validメソッドを実行するとターゲットとなるモデルの値が更新される
     def test_form_valid(self):
 
-        Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31), attendance_time=datetime.datetime.now())
+        Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date.today(), attendance_time=datetime.datetime.now())
 
-        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31),)
+        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date.today(),)
         #まだ変更していないためcontentは空である
         self.assertEqual(instance.content, None)
 
         request = self.client.post(reverse('work:home', kwargs={'pk':self.user_tanaka.employee_number}),
-                                   data={'target-obj':'31日',
+                                   data={'target-month':f'{datetime.date.today().year} / {datetime.date.today().month}',
+                                         'target-obj':f'{datetime.date.today().day}日',
                                          "attendance_time" : '14:00',
                                          'closing_time' : '00:00',
                                          'break_time' : '01:00',
                                          'content' : '積み込み'},)
         
-        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date(2024, 10, 31),)
+        instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date.today(),)
         #form_validで保存されているためcontentに積み込みが入っているはず
         self.assertEqual(instance.content, '積み込み')
 

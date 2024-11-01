@@ -25,8 +25,7 @@ class HomeView(ListView):
     def get(self, request, *args, **kwargs):
         self.is_queryset = False
 
-        if 'drop_down' in self.request.GET:
-            self.target_month = self.request.GET.get('drop_down')
+        self.target_month = self.change_target_month()
 
         self.object_list = self.get_queryset()
         allow_empty = self.get_allow_empty()
@@ -49,10 +48,8 @@ class HomeView(ListView):
         return self.render_to_response(context)
     
     def post(self, request, *args, **kwargs):
-        #ターゲットとなる年月をdate型で保持
-        target_month = self.date.change_str_datetime(date=self.target_month)
         #年月とformからどの日のものかを取得して(年,月,日)のdate型を作成
-        target_obj_date = self.date.change_datetime_from_post(target=target_month, date=self.request.POST['target-obj'])
+        target_obj_date = self.date.change_datetime_from_post(target=self.request.POST['target-month'], date=self.request.POST['target-obj'])
         #target_obj_dateとpkをもとに対象のモデルを特定
         instance = Attendance.objects.get(employee_number=self.request.user.pk, date=target_obj_date)
 
@@ -62,6 +59,7 @@ class HomeView(ListView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+        
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)
@@ -83,6 +81,9 @@ class HomeView(ListView):
         return HttpResponseRedirect(self.get_success_url())
     
     def form_invalid(self, form):
+        self.target_month = self.change_target_month()
+
+        self.object_list = self.get_queryset()
         return self.render_to_response(self.get_context_data(edit_form=form))
     
 
@@ -112,6 +113,15 @@ class HomeView(ListView):
         #datetime型のobjから日付だけのリストを作る
         days_list = [date.day for date in queryset_dates_list ]
         return days_list
+    
+    def change_target_month(self):
+        if self.request.method == 'GET':
+            if 'drop_down' in self.request.GET:
+                return self.request.GET.get('drop_down')
+            return self.target_month
+        else:
+            target = self.request.POST['target-month']
+            return target.replace(' / ', '')
 
 class EmployeeListView(TemplateView):
     template_name = 'work/employeeList.html'
