@@ -1,5 +1,43 @@
 //modal表示ボタンを全て取得
-const modalButtons = document.getElementsByName('modalButton');
+const editModalButtons = document.getElementsByName('editModalButton');
+
+//読み込み時にドロップダウンボタンに関数を付与
+document.addEventListener("DOMContentLoaded", function(){
+
+    //dropdown buttonを格納
+    const dropdownButton = document.getElementById('dropdownDefaultButton');
+    dropdownButton.addEventListener("click", onClick, false);
+
+    //editModalを取得
+    const editModal = document.getElementById('authentication-editModal');
+    //createModalを取得
+    const createModal = document.getElementById('authentication-createModal');
+
+    //editModal表示ボタンを全て取得
+    const editModalButtons = document.getElementsByName('editModalButton');
+
+    //editModal表示ボタンに関数を付与
+    for(let i=0; i<editModalButtons.length; i++){
+        editModalButtons[i].addEventListener("click", {target: editModal, handleEvent: openEditModal, arg: i}, false);
+    };
+
+    //createModal表示ボタンに関数を付与
+    const createModalButton = document.getElementById('createModalButton');
+    if (createModalButton){
+        createModalButton.addEventListener('click', {target: createModal, handleEvent: openCreateModal}, false);
+    } else{;}
+
+    //editmodal閉じるボタンを取得
+    const closeEditButton = document.getElementById('closeEditModalButton');
+    closeEditButton.addEventListener('click', {target: editModal, handleEvent: closeModal}, false);
+
+    //createmodal閉じるボタンを取得
+    const closeCreateButton = document.getElementById('closeCreateModalButton');
+    closeCreateButton.addEventListener('click', {target: createModal, handleEvent: closeModal}, false);
+
+},
+false);
+
 
 //メニューを表示させる関数
 function onClick(){
@@ -16,74 +54,40 @@ function onClick(){
 
 };
 
-
-//modalを閉じる関数
-function closeModal(e){
-    this.target.classList.add('hidden');
-
-    //bodyからoverflow-hiddenを外す
-    document.body.classList.remove('overflow-hidden');
-};
-
-//読み込み時にドロップダウンボタンに関数を付与
-document.addEventListener("DOMContentLoaded", function(){
-
-    //dropdown buttonを格納
-    const dropdownButton = document.getElementById('dropdownDefaultButton');
-    dropdownButton.addEventListener("click", onClick, false);
-
-    //modalを取得
-    const modal = document.getElementById('authentication-modal');
-
-    //modal表示ボタンを全て取得
-    const modalButtons = document.getElementsByName('modalButton');
-
-    //modal表示ボタンに関数を付与
-    for(let i=0; i<modalButtons.length; i++){
-        modalButtons[i].addEventListener("click", {target: modal, handleEvent: openModal, arg: i}, false);
-    };
-
-    //modal閉じるボタンを取得
-    const closeButton = document.getElementById('closeButton');
-    closeButton.addEventListener('click', {target: modal, handleEvent: closeModal}, false);
-
-},
-false);
-
-//modalを表示する関数
-function openModal(e){
-    //modalの要素を取得
-    const modalDate = document.getElementById('modal-date');
-    const modalAttendance = document.getElementById('modal-attendance');
-    const modalClosing = document.getElementById('modal-closing');
-    const modalBreak = document.getElementById('modal-break');
-    const modalContent = document.getElementById('modal-content');
+//editModalを表示する関数
+function openEditModal(e){
+    //editModalの要素を取得
+    const editModalDate = document.getElementById('edit-modal-date');
+    const editModalAttendance = document.getElementById('edit-modal-attendance');
+    const editModalClosing = document.getElementById('edit-modal-closing');
+    const editModalBreak = document.getElementById('edit-modal-break');
+    const editModalContent = document.getElementById('edit-modal-content');
     const targetObj = document.getElementsByName('target-obj')[0];
 
-    //modalの中の値を動的に描画
-    modalDate.textContent = modalButtons[this.arg].dataset.date + modalButtons[this.arg].dataset.weekday
-    if (modalButtons[this.arg].dataset.attendance) {
+    //editModalの中の値を動的に描画
+    editModalDate.textContent = editModalButtons[this.arg].dataset.date + editModalButtons[this.arg].dataset.weekday
+    if (editModalButtons[this.arg].dataset.attendance) {
         //出勤時間、退勤時間、休憩時間はそれぞれtimefieldのためvalueに値を入れた
-        modalAttendance.value = modalButtons[this.arg].dataset.attendance
+        editModalAttendance.value = editModalButtons[this.arg].dataset.attendance
     }else{
         ;
     }
-    if (modalButtons[this.arg].dataset.closing) {
-        modalClosing.value = modalButtons[this.arg].dataset.closing
+    if (editModalButtons[this.arg].dataset.closing) {
+        editModalClosing.value = editModalButtons[this.arg].dataset.closing
     }else{
         ;
     }
-    if (modalButtons[this.arg].dataset.break) {
-        modalBreak.value = modalButtons[this.arg].dataset.break
+    if (editModalButtons[this.arg].dataset.break) {
+        editModalBreak.value = editModalButtons[this.arg].dataset.break
     }else{
         ;
-    }if (modalButtons[this.arg].dataset.break) {
-        modalContent.value = modalButtons[this.arg].dataset.content
+    }if (editModalButtons[this.arg].dataset.break) {
+        editModalContent.value = editModalButtons[this.arg].dataset.content
     }else{
         ;
     }
 
-    targetObj.value +=  modalButtons[this.arg].dataset.date
+    targetObj.value = editModalButtons[this.arg].dataset.date
 
 
     //modalのclassからhiddenを外す
@@ -91,4 +95,22 @@ function openModal(e){
 
     //スクロールできないようbodyにoverflow-hiddenをつける
     document.body.classList.add('overflow-hidden');
+};
+
+//createModalを表示する関数
+function openCreateModal(e){
+
+    //createModalのclassからhiddenを外す
+    this.target.classList.remove('hidden');
+
+    //スクロールできないようbodyにoverflow-hiddenをつける
+    document.body.classList.add('overflow-hidden');
+};
+
+//modalを閉じる関数
+function closeModal(e){
+    this.target.classList.add('hidden');
+
+    //bodyからoverflow-hiddenを外す
+    document.body.classList.remove('overflow-hidden');
 };
