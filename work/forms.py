@@ -63,10 +63,10 @@ class EditForm(forms.ModelForm):
             #classを追加
             field.widget.attrs['class'] = field_classes
 
-        self.fields['attendance_time'].widget.attrs['id'] = 'modal-attendance'
-        self.fields['closing_time'].widget.attrs['id'] = 'modal-closing'
-        self.fields['break_time'].widget.attrs['id'] = 'modal-break'
-        self.fields['content'].widget.attrs['id'] = 'modal-content'
+        self.fields['attendance_time'].widget.attrs['id'] = 'edit-modal-attendance'
+        self.fields['closing_time'].widget.attrs['id'] = 'edit-modal-closing'
+        self.fields['break_time'].widget.attrs['id'] = 'edit-modal-break'
+        self.fields['content'].widget.attrs['id'] = 'edit-modal-content'
         #contentフィールドだけw-2/4を追加したいためfield_classesを書き換え
         field_classes = ('w-2/4 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
         self.fields['content'].widget.attrs['class'] = field_classes
