@@ -75,31 +75,42 @@
             <tbody>
               <!-- date_listから日付と曜日を一つずつ取り出す -->
               {% for date, weekday in date_list %}
+                <tr>
+                  <td class="border px-4 py-2 text-center">{{ date }}日（{{ weekday }}）</td>
+
                   <!-- for文を２つのリストで回すためにdjango-boostのzip関数を使用 -->
-                {% for object, queryset_day in object_list|zip:queryset_days %}
-                  <!-- 日付とクエリセットから作ったリストの値が同じときのobject_listの中身をそれぞれ描写(indexが0からのためcounterも0からスタート) -->
-                  {% if queryset_day == date %}
-                    <tr>
-                      <td class="border px-4 py-2 text-center">{{ date }}日（{{ weekday }}）</td>
+                  {% for object, queryset_day in object_list|zip:queryset_days %}
+                    <!-- 日付とクエリセットから作ったリストの値が同じときのobject_listの中身をそれぞれ描写(indexが0からのためcounterも0からスタート) -->
+                    {% if queryset_day == date %}
                       <td class="border px-4 py-2 text-center">{{ object.attendance_time }}</td>
-                      <td class="border px-4 py-2 text-center">{{ object.closing_time }}</td>
-                      <td class="border px-4 py-2 text-center">{{ object.break_time }}</td>
-                      <td class="border px-4 py-2 ">{{ object.content }}</td>
-                      <td class="border px-4 py-2 text-center">
-                        <a href="#" name="editModalButton" data-date="{{ date }}日" data-weekday="（{{ weekday }}）" data-attendance="{{ object.attendance_time }}" data-closing="{{ object.closing_time }}" data-break="{{ object.break_time }}" data-content="{{ object.content }}"><span class="dli-plus-circle"><span></span></span></a>
-                      </td>
-                    </tr>
-                  {% else %}
-                    <tr>
-                      <td class="border px-4 py-2 text-center">{{ date }}日（{{ weekday }}）</td>
-                      <td class="border px-4 py-2 text-center"></td>
-                      <td class="border px-4 py-2 text-center"></td>
-                      <td class="border px-4 py-2 text-center"></td>
-                      <td class="border px-4 py-2 "></td>
-                      <td class="border px-4 py-2 text-center"></td>
-                    </tr>
-                  {% endif %}
-                {% endfor %}
+
+                      {% if object.closing_time is not None %}
+                          <td class="border px-4 py-2 text-center">{{ object.closing_time }}</td>
+                      {% else %}
+                          <td class="border px-4 py-2 text-center"></td>
+                      {% endif %}
+
+                      {% if object.break_time is not None %}
+                        <td class="border px-4 py-2 text-center">{{ object.break_time }}</td>
+                      {% else %}
+                        <td class="border px-4 py-2 text-center"></td>
+                      {% endif %}
+
+                      {% if object.content is not None %}
+                        <td class="border px-4 py-2 ">{{ object.content }}</td>
+                        <td class="border px-4 py-2 text-center">
+                          <a href="#" name="editModalButton" data-date="{{ date }}日" data-weekday="（{{ weekday }}）" data-attendance="{{ object.attendance_time }}" data-closing="{{ object.closing_time }}" data-break="{{ object.break_time }}" data-content="{{ object.content }}"><span class="dli-plus-circle"><span></span></span></a>
+                        </td>
+                      {% else %}
+                        <td class="border px-4 py-2 "></td>
+                        <td class="border px-4 py-2 text-center">
+                          <a href="#" name="editModalButton" data-date="{{ date }}日" data-weekday="（{{ weekday }}）" data-attendance="{{ object.attendance_time }}" data-closing="{{ object.closing_time }}" data-break="{{ object.break_time }}" data-content="{{ object.content }}"><span class="dli-plus-circle"><span></span></span></a>
+                        </td>
+                      {% endif %}
+
+                    {% endif %}
+                  {% endfor %}
+                </tr>
               {% endfor %}
             </tbody>
         </table>
@@ -176,7 +187,7 @@
                     </div>
                     
                     <div class="flex justify-center items-center">
-                      <button type="submit" class="w-2/4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">登録</button>
+                      <button type="submit" name="edit" class="w-2/4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">登録</button>
                     </div>
                   </div>
                 </form>

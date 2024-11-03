@@ -99,6 +99,13 @@ class CreateForm(forms.ModelForm):
 
 
     def __init__(self, *args, **kwargs):
+        #kwargsにrequestが渡されている場合self.requestに保持
+        if kwargs.get('request'):
+            self.request = kwargs.pop('request')
+        #なければnoneを格納
+        else:
+            self.request = None
+
         super().__init__(*args, **kwargs)
 
         field_classes = ('bg-gray-50 border border-gray-300 text-gray-900 rounded-lg mr-1 focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
@@ -114,5 +121,17 @@ class CreateForm(forms.ModelForm):
         self.fields['date'].widget.attrs['placeholder'] = '例:2024年11月1日'    
         self.fields['attendance_time'].widget.attrs['placeholder'] = '例:8:00'
         self.fields['closing_time'].widget.attrs['placeholder'] = '例:17:00'
+        #退勤時間、休憩時間、業務内容はcreate_formではrequiredはfalse
+        self.fields['closing_time'].required = False
         self.fields['break_time'].widget.attrs['placeholder'] = '例:1:00'
+        self.fields['break_time'].required = False
         self.fields['content'].widget.attrs['placeholder'] = '例:積み込み'
+        self.fields['content'].required = False
+
+    def clean(self):
+        #postリクエストを出したユーザーのモデルの中に入力された日付のものがあるか判定
+        instance = Attendance.objects.filter(employee_number=self.request.user.pk, date=self.cleaned_data['date'])
+        #もしinstanceにデータがあればエラーメッセージを出力
+        if len(instance) != 0:
+            self.add_error(None, 'この日付の勤怠情報はすでに作成済みです。')
+        return self.cleaned_data
