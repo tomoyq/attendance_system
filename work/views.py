@@ -48,18 +48,36 @@ class HomeView(ListView):
         return self.render_to_response(context)
     
     def post(self, request, *args, **kwargs):
+        # #編集フォームからのpostリクエストの場合post_edit_formを実行
+        if 'edit' in request.POST:
+            return self.post_edit_form(request=request)
+        #そうでなければpost_create_formを実行
+        else:
+            return self.post_create_form(request=request)
+
+        
+    def post_edit_form(self, request):
         #年月とformからどの日のものかを取得して(年,月,日)のdate型を作成
         target_obj_date = self.date.change_datetime_from_post(target=self.request.POST['target-month'], date=self.request.POST['target-obj'])
         #target_obj_dateとpkをもとに対象のモデルを特定
         instance = Attendance.objects.get(employee_number=self.request.user.pk, date=target_obj_date)
 
         #対象のモデルをinstanceに指定したformインスタンスを作成
-        form = EditForm(request.POST, instance=instance)
+        form = EditForm(data=request.POST, instance=instance)
         if form.is_valid():
-            return self.form_valid(form)
+            return self.edit_form_valid(form)
         else:
-            return self.form_invalid(form)
+            return self.edit_form_invalid(form)
         
+    def post_create_form(self, request):
+        #入力された値をもとにcreate_formインスタンスを作成    
+        form = CreateForm(request=request, data=request.POST)
+        if form.is_valid():
+            return self.create_form_valid(form)
+        else:
+            return self.create_form_invalid(form)
+
+
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)
@@ -76,16 +94,30 @@ class HomeView(ListView):
     def get_success_url(self):
         return str(reverse('work:home', kwargs={'pk':self.request.user.pk}))
     
-    def form_valid(self, form):
+    def edit_form_valid(self, form):
         form.save()
         return HttpResponseRedirect(self.get_success_url())
     
-    def form_invalid(self, form):
+    def edit_form_invalid(self, form):
         self.target_month = self.change_target_month()
 
         self.object_list = self.get_queryset()
         return self.render_to_response(self.get_context_data(edit_form=form))
     
+    def create_form_valid(self, form):
+        #入力された値を保存
+        #最初はデータベースには保存せずにオブジェクトを保持する
+        new_attendance = form.save(commit=False)
+        #new_attendanceの社員番号をフォームを送信したユーザーのものにする
+        new_attendance.employee_number = self.request.user
+        new_attendance.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def create_form_invalid(self, form):
+        self.target_month = self.change_target_month()
+
+        self.object_list = self.get_queryset()
+        return self.render_to_response(self.get_context_data(create_form=form))   
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
