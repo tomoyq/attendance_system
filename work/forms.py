@@ -70,3 +70,49 @@ class EditForm(forms.ModelForm):
         #contentフィールドだけw-2/4を追加したいためfield_classesを書き換え
         field_classes = ('w-2/4 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
         self.fields['content'].widget.attrs['class'] = field_classes
+
+
+class CreateForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['date', 'attendance_time', 'closing_time', 'break_time', 'content', ]
+
+        error_messages={
+            'attendance_time': {
+                'invalid': 'HH:MM形式で入力して下さい。'
+            },
+            'closing_time': {
+                'invalid': 'HH:MM形式で入力して下さい。'
+            },
+        }
+
+        widgets = {
+            #日付をカレンダー入力できるようにtype属性にdateを指定
+            'date': forms.NumberInput(attrs={
+                "type": "date"
+            })
+        }
+
+        attendance_time = forms.TimeInput(format='HH:MM')
+        closing_time = forms.TimeInput(format='HH:MM')
+        break_time = CustomDurationField()
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        field_classes = ('bg-gray-50 border border-gray-300 text-gray-900 rounded-lg mr-1 focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
+        
+        for field in self.fields.values():
+            #classを追加
+            field.widget.attrs['class'] = field_classes
+
+        #contentフィールドだけw-2/4を追加したいためfield_classesを書き換え
+        field_classes = ('w-2/4 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500')
+        self.fields['content'].widget.attrs['class'] = field_classes
+
+        self.fields['date'].widget.attrs['placeholder'] = '例:2024年11月1日'    
+        self.fields['attendance_time'].widget.attrs['placeholder'] = '例:8:00'
+        self.fields['closing_time'].widget.attrs['placeholder'] = '例:17:00'
+        self.fields['break_time'].widget.attrs['placeholder'] = '例:1:00'
+        self.fields['content'].widget.attrs['placeholder'] = '例:積み込み'

@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, ListView
 from django.http import HttpResponseRedirect
 
 from .date import CalculateDates
-from .forms import EditForm
+from .forms import EditForm, CreateForm
 from .models import Attendance
 
 @method_decorator(login_required, name='dispatch')
@@ -101,6 +101,9 @@ class HomeView(ListView):
         context['is_queryset'] = self.is_queryset
         #編集モーダル内のform
         context['edit_form'] = EditForm()
+
+        #勤怠打刻モーダル内のform
+        context['create_form'] = CreateForm()
 
         return context
     
