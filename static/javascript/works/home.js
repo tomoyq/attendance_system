@@ -3,6 +3,22 @@ const editModalButtons = document.getElementsByName('editModalButton');
 
 //読み込み時にドロップダウンボタンに関数を付与
 document.addEventListener("DOMContentLoaded", function(){
+    //すべてのtableを取得
+    const tables = document.getElementsByName('table');
+    //tableの中のtd要素数が6個ない場合は空白のtd要素を動的に作成
+    for(let i=0; i<tables.length; i++){
+        //tdの要素数を取得
+        const trContentCounter = tables[i].cells.length;
+        //要素数が６個ない場合空白の要素を追加
+        if (trContentCounter != 6){
+            //空白の要素を４個作成する
+            for(let n=1; n<5; n++){
+                newCell = tables[i].insertCell(n)
+                newCell.classList.add('border', 'px-4', 'py-2', 'text-center')
+            }
+        }else{;}
+    };
+    
 
     //dropdown buttonを格納
     const dropdownButton = document.getElementById('dropdownDefaultButton');
