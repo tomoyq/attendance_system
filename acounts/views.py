@@ -42,7 +42,9 @@ class LoginView(LoginView):
         if admin_login_form is not None:
             context = {
                 'login_form' : LoginForm(),
-                'admin_login_form' : admin_login_form
+                'admin_login_form' : admin_login_form,
+                #再描画された時に管理者ログインのformを表示するためのフラグ
+                'submit_form' : 'admin_login_form'
             }
             return render(self.request, self.template_name, context)
 
