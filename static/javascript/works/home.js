@@ -3,7 +3,7 @@ const editModalButtons = document.getElementsByName('editModalButton');
 
 //読み込み時にドロップダウンボタンに関数を付与
 document.addEventListener("DOMContentLoaded", function(){
-    //すべてのtableを取得
+        //すべてのtableを取得
     const tables = document.getElementsByName('table');
     //tableの中のtd要素数が6個ない場合は空白のtd要素を動的に作成
     for(let i=0; i<tables.length; i++){
