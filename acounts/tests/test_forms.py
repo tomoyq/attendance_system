@@ -1,7 +1,7 @@
 from django.test import TestCase
 from acounts.models import CustomUser
 from work.models import Manager
-from ..forms import LoginForm
+from ..forms import AdminLoginForm, LoginForm
 
 class Test_LoginForm(TestCase):
 
@@ -49,3 +49,22 @@ class Test_LoginForm(TestCase):
         form = LoginForm(data=form_data)
         #form.is_valid()がTrueの時はログイン成功
         self.assertTrue(form.is_valid(), form.errors)
+
+class Test_AdminLoginForm(TestCase):
+    def setUp(self):
+        self.manager = Manager.objects.create(name="田中太郎")
+        #is_staffはfalseになっている
+        CustomUser.objects.create_user(employee_number=111111, name="田中太郎", password='test_pass' , manager_id=self.manager, )
+
+    #管理者権限を判定するかテスト
+    def test_check_permissions(self):
+        form_data = {
+            "employee_number" : 111111,
+            'password' : 'test_pass'
+        }
+        form = AdminLoginForm(data=form_data)
+        #form.is_valid()がTrueの時はログイン成功
+        self.assertFalse(form.is_valid(), form.errors)
+        #エラーメッセージが出ている
+        self.assertEqual(form.non_field_errors(), ["このユーザーに管理者権限はありません。"
+                                                   "従業員ログインをお試しください。"])

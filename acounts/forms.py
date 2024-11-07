@@ -46,11 +46,8 @@ class CustomAuthenticationForm(forms.Form):
     )
 
     error_messages = {
-        "invalid_login": _(
-            "Please enter a correct %(employee_number)s and password. Note that both "
-            "fields may be case-sensitive."
-        ),
-        "inactive": _("This account is inactive."),
+        "invalid_login": _("社員番号かパスワードが違います。"),
+        "inactive": _("このアカウントは既にログイン済みです。"),
     }
 
     def __init__(self, request=None, *args, **kwargs):
@@ -126,6 +123,14 @@ class LoginForm(CustomAuthenticationForm):
             field.widget.attrs['class'] = field_classes
 
 class AdminLoginForm(CustomAuthenticationForm):
+    error_messages = {
+        "invalid_login": _("社員番号かパスワードが違います。"),
+        "inactive": _("このアカウントは既にログイン済みです。"),
+        "permission_denied": _("このユーザーに管理者権限はありません。"
+                               "従業員ログインをお試しください。"
+                               ),
+    }
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -136,4 +141,30 @@ class AdminLoginForm(CustomAuthenticationForm):
             field.widget.attrs['placeholder'] = field.label
             #classを追加
             field.widget.attrs['class'] = field_classes
+
+    def clean(self):
+        employee_number = self.cleaned_data.get("employee_number")
+        password = self.cleaned_data.get("password")
+
+        if employee_number is not None and password:
+            self.user_cache = authenticate(
+                self.request, employee_number=employee_number, password=password
+            )
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+
+            #ユーザーに管理者権限があるか判定
+            self.check_permissions(self.user_cache)
+
+        return self.cleaned_data 
+    
+    #ユーザーに管理者権限があるか判定する
+    def check_permissions(self, user):
+        if not user.is_staff:
+            raise ValidationError(
+                self.error_messages["permission_denied"],
+                code="permission_denied",
+            )
 
