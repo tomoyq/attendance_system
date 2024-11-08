@@ -22,7 +22,7 @@ class UrlTest(TestCase):
     #employee_listページのurlはemployee_listviewを表示しているか
     def test_employee_list_url(self):
         #reverse関数は引数のurlを返す
-        url = reverse('work:employeeList')
+        url = reverse('work:employeeList', kwargs={'managerId' : 1})
         #resolve関数はurlから情報にアクセスできるようにresolvematchオブジェクトにする
         #view_nameはnamespaceとnameが:で結合されたものが入っている
         self.assertEqual(resolve(url).view_name, 'work:employeeList')
