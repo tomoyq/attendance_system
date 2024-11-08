@@ -40,8 +40,7 @@ class LoginViewAdminLoginFormTests(TestCase):
         CustomUser.objects._create_user(employee_number=111111, name="田中太郎", password='test_pass' , manager_id=self.manager)
 
         #管理者権限を持ったユーザーの作成
-        admin = CustomUser.objects._create_user(employee_number=222222, name="管理者", password='test_pass' , manager_id=self.manager)
-        admin.is_staff = True
+        self.admin = CustomUser.objects.create_superuser(employee_number=222222, name="管理者", password='test_pass' , manager_id=self.manager)
 
         #request.POSTの中にadmin_login_formを渡す
         self.data = [{'admin_login_form': 'true', "employee_number": 111111, "password": "test_pass"},
@@ -64,4 +63,4 @@ class LoginViewAdminLoginFormTests(TestCase):
         #fetch_redirect_response=最終ページをロードするか否か
 
         #リクエストの中のユーザーのmanaager_idをurlのmanagerIDに渡す
-        self.assertRedirects(request, reverse('work:employeeList', kwargs={'managerId':request.user.manager_id.pk}), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(request, reverse('work:employeeList', kwargs={'managerId':self.admin.manager_id.pk}), status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
