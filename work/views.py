@@ -1,14 +1,17 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.urls import reverse
-from django.views.generic import TemplateView, ListView
+from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 
 from .date import CalculateDates
 from .forms import EditForm, CreateForm
 from .models import Attendance
+
+User = get_user_model()
 
 @method_decorator(login_required, name='dispatch')
 class HomeView(ListView):
@@ -158,5 +161,22 @@ class HomeView(ListView):
             target = self.request.POST['target-month']
             return target.replace(' / ', '')
 
-class EmployeeListView(TemplateView):
+class EmployeeListView(ListView):
     template_name = 'work/employeeList.html'
+    model = User
+    ordering = 'employee_number'
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs)
+        #manager_idがurlのpkと一緒の社員を取得
+        queryset = queryset.filter(manager_id__pk=self.request.user.manager_id.pk)
+        #employee_numberがログインしているユーザーの物以外を取得する
+        queryset = queryset.exclude(employee_number=self.request.user.pk)
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+
+        return context
