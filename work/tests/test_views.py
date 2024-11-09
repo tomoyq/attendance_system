@@ -92,29 +92,54 @@ class LoggedInHomeViewTests(TestCase):
         #querysetには今日の日付のデータが入っているためqueryset_daysにも今日の日付が入っている
         self.assertEqual(request.context['queryset_days'][0], datetime.date.today().day)
 
-    #form_validメソッドを実行するとターゲットとなるモデルの値が更新される
-    # def test_form_valid(self):
+class LoggedInEmployeeListViewTests(TestCase):
+    def setUp(self):
+        #管理者として２人登録する
+        self.manager_tanaka = Manager.objects.create(name="田中太郎")
+        self.manager_satou = Manager.objects.create(name="佐藤花子")
+        #社員を１人, 管理者権限を持つ社員を２人登録する
+        self.user_tanaka = CustomUser.objects.create_superuser(employee_number=111111, name="田中太郎", password='test_pass' , manager_id=self.manager_tanaka)
+        self.user_satou = CustomUser.objects.create_superuser(employee_number=222222, name="佐藤花子", password='test_pass' , manager_id=self.manager_satou)
 
-    #     Attendance.objects.create(employee_number=self.user_tanaka, date=datetime.date.today(), attendance_time=datetime.datetime.now())
+        self.tanaka_deshi = CustomUser.objects.create(employee_number=121212, name="田中の弟子", password='test_pass' , manager_id=self.manager_tanaka)
 
-    #     instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date.today(),)
-    #     #まだ変更していないためcontentは空である
-    #     self.assertEqual(instance.content, None)
 
-    #     request = self.client.post(reverse('work:home', kwargs={'pk':self.user_tanaka.employee_number}),
-    #                     form=EditForm(data={'target-month':f'{datetime.date.today().year} / {datetime.date.today().month}',
-    #                                             'target-obj':f'{datetime.date.today().day}日',
-    #                                             "attendance_time" : '14:00',
-    #                                             'closing_time' : '00:00',
-    #                                             'break_time' : '01:00',
-    #                                             'content' : '積み込み',},
-    #                                     ),
-    #                     )
-        
-    #     instance = Attendance.objects.get(employee_number=self.user_tanaka, date=datetime.date.today(),)
-    #     #form_validで保存されているためcontentに積み込みが入っているはず
-    #     self.assertEqual(instance.content, '積み込み')
+    #getメソッドでアクセスするとステータスコードが200を返す
+    #また、contextの中にログインしたuserのオブジェクトが入っている
+    def test_get(self):
+        #userにログインしておく
+        self.client.force_login(self.user_tanaka)
 
+        request = self.client.get(reverse('work:employeeList', kwargs={'managerId':self.user_tanaka.manager_id.pk}))
+        self.assertEqual(request.status_code, 200)
+        #templateはemployeeList.htmlを表示
+        self.assertEqual(request.templates[0].name, 'work/employeeList.html')
+
+        #requestの中のcontextにuserが入っているはず
+        self.assertEqual(request.context['user'].name, self.user_tanaka.name)
+
+    #クエリセットでログインしているuserが田中太郎の場合
+    def test_query_set_by_user_tanaka(self):
+        #userにログインしておく
+        self.client.force_login(self.user_tanaka)
+
+        request = self.client.get(reverse('work:employeeList', kwargs={'managerId':self.user_tanaka.manager_id.pk}))
+
+        #user_tanakaが管理している社員は１人しかいないためquerysetの中は１つのはず
+        self.assertEqual(len(request.context['object_list']), 1)
+
+        #object_listの中には（田中の弟子）のデータしかないはず
+        self.assertEqual(request.context['object_list'][0].name, self.tanaka_deshi.name)
+
+    #クエリセットでログインしているuserが佐藤花子の場合
+    def test_query_set_by_user_satou(self):
+        #userにログインしておく
+        self.client.force_login(self.user_satou)
+
+        request = self.client.get(reverse('work:employeeList', kwargs={'managerId':self.user_satou.manager_id.pk}))
+
+        #user_satouが管理している社員は１人もいないためquerysetの中は0のはず
+        self.assertEqual(len(request.context['object_list']), 0)
 
 
 #ログインしていない場合のテスト

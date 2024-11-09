@@ -5,8 +5,18 @@
 {% block content %}
 
 <div class="pt-24 w-full h-screen mx-auto bg-primary-100">
-  <div class="flex justify-center items-center py-10 text-4xl font-bold">
-    <h1>社員一覧</h1>
+  <div class="flex justify-center items-center relative">
+    <h1 class="py-10 text-4xl font-bold">社員一覧</h1>
+
+    <div class="w-1/5 text-center flex-1 absolute right-20">
+      <a href="{% url 'work:home' user.pk %}"><h3 class="font-bold">{{user.name}}さんの勤怠一覧へ</h3></a>
+
+      <form method="POST" action="{% url 'acounts:logout' %}" name="logout_form">
+        {% csrf_token %}
+        <a href="#" onclick="document.logout_form.submit();" class="hover:underline hover:decoration-blue-500">ログアウト</a>
+      </form>
+
+    </div>
   </div>
 
   <table class="table-auto w-50% mx-auto mt-24">
@@ -17,35 +27,19 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="border-black border-2 px-4 py-2 text-center">111111</td>
-        <td class="border-black border-2 px-4 py-2 ">
-          <div class="flex justify-between">
-            <p class="font-bold">山田太郎</p>
-            <a href="">勤怠一覧</a>
-          </div>
-        </td>
-      </tr>
 
-      <tr>
-        <td class="border-black border-2 px-4 py-2 text-center">222222</td>
-        <td class="border-black border-2 px-4 py-2 ">
-          <div class="flex justify-between">
-            <p class="font-bold">山田花子</p>
-            <a href="">勤怠一覧</a>
-          </div>
-        </td>
-      </tr>
+      {% for object in object_list %}
+        <tr>
+          <td class="border-black border-2 px-4 py-2 text-center">{{object.employee_number}}</td>
+          <td class="border-black border-2 px-4 py-2 ">
+            <div class="flex justify-between">
+              <p class="font-bold">{{object.name}}</p>
+              <a href="">勤怠一覧</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
 
-      <tr>
-        <td class="border-black border-2 px-4 py-2 text-center">333333</td>
-        <td class="border-black border-2 px-4 py-2 ">
-          <div class="flex justify-between">
-            <p class="font-bold">田中一</p>
-            <a href="">勤怠一覧</a>
-          </div>
-        </td>
-      </tr>
     </tbody>
   </table>
 </div>
