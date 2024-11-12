@@ -19,7 +19,7 @@
             </button>
             
             <!-- Dropdown menu -->
-            <form action="{% url 'work:home' user.employee_number %}" method="GET">
+            <form action="{% url 'work:home' target_user.employee_number %}" method="GET">
               {% csrf_token %}
               <div id="dropdown" class="z-10 hidden bg-white divide-gray-100 rounded-lg shadow dark:bg-gray-700">
                 <div class="py-2 text-sm text-center" aria-labelledby="dropdownDefaultButton">
@@ -40,7 +40,7 @@
           <div class="flex">
             <div class="mr-5 text-center">
 
-              <h3 class="font-bold">{{user.name}}さんの勤怠記録</h3>
+              <h3 class="font-bold">{{target_user.name}}さんの勤怠記録</h3>
 
               <form method="POST" action="{% url 'acounts:logout' %}" name="logout_form">
                 {% csrf_token %}

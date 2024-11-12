@@ -8,12 +8,13 @@ from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 
 from .date import CalculateDates
+from .dedcorators import custom_login_required
 from .forms import EditForm, CreateForm
 from .models import Attendance
 
 User = get_user_model()
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(custom_login_required, name='dispatch')
 class HomeView(ListView):
     template_name = 'work/home.html'
     model = Attendance
@@ -27,6 +28,16 @@ class HomeView(ListView):
 
     def get(self, request, *args, **kwargs):
         self.is_queryset = False
+
+        #管理者画面からアクセスがあればurlパラメーターから対象の社員を特定
+        try:
+            self.target_employee = int(kwargs['targetEmployeeNumber'])
+            #管理者フラグを作る
+            self.permission = True
+        #そうでなければrequestオブジェクトからpkを取得
+        except:
+            self.target_employee = self.request.user.pk
+            self.permission = False
 
         self.target_month = self.change_target_month()
 
@@ -62,8 +73,9 @@ class HomeView(ListView):
     def post_edit_form(self, request):
         #年月とformからどの日のものかを取得して(年,月,日)のdate型を作成
         target_obj_date = self.date.change_datetime_from_post(target=self.request.POST['target-month'], date=self.request.POST['target-obj'])
+
         #target_obj_dateとpkをもとに対象のモデルを特定
-        instance = Attendance.objects.get(employee_number=self.request.user.pk, date=target_obj_date)
+        instance = Attendance.objects.get(employee_number=self.target_employee, date=target_obj_date)
 
         #対象のモデルをinstanceに指定したformインスタンスを作成
         form = EditForm(data=request.POST, instance=instance)
@@ -82,20 +94,24 @@ class HomeView(ListView):
 
 
 
-    def get_queryset(self, **kwargs):
+    def get_queryset(self, admin=False, **kwargs):
         queryset = super().get_queryset(**kwargs)
         #表示したい月のdatetime型objの取得
         target = self.date.change_str_datetime(date=self.target_month)
 
         #社員番号がログインしているユーザーのもので、出勤日がtargetの年月と一致しているものを取得
-        queryset = queryset.filter(employee_number=self.request.user.pk, date__year=target.year, date__month=target.month)
+        queryset = queryset.filter(employee_number=self.target_employee, date__year=target.year, date__month=target.month)
         if queryset.first() is None:
             self.is_queryset = True
 
         return queryset
     
     def get_success_url(self):
-        return str(reverse('work:home', kwargs={'pk':self.request.user.pk}))
+        #管理者画面からのアクセスだった場合リダイレクト先を変更
+        if self.permission:
+            return str(reverse('work:adminEmployeeList', kwargs={'managerId': self.request.user.manager_id, 'targetEmployeeNumber':self.target_employee}))
+        else:
+            return str(reverse('work:home', kwargs={'pk':self.target_employee}))
     
     def edit_form_valid(self, form):
         form.save()
@@ -112,7 +128,7 @@ class HomeView(ListView):
         #最初はデータベースには保存せずにオブジェクトを保持する
         new_attendance = form.save(commit=False)
         #new_attendanceの社員番号をフォームを送信したユーザーのものにする
-        new_attendance.employee_number = self.request.user
+        new_attendance.employee_number = self.target_employee
         new_attendance.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -125,6 +141,7 @@ class HomeView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
+        context['target_user'] = User.objects.get(pk=self.target_employee)
         #表示している年月を取得
         context['target'] = self.date.change_str_datetime(date=self.target_month)
         #当月合わせて5か月分の過去の月を取得
@@ -161,6 +178,7 @@ class HomeView(ListView):
             target = self.request.POST['target-month']
             return target.replace(' / ', '')
 
+@method_decorator(login_required, name='dispatch')
 class EmployeeListView(ListView):
     template_name = 'work/employeeList.html'
     model = User
